@@ -1,6 +1,10 @@
 import os
 import httpx
 from mcp.server.fastmcp import FastMCP
+from starlette.applications import Starlette
+from starlette.routing import Mount, Route
+from starlette.responses import PlainTextResponse
+import uvicorn
 
 API_BASE = os.environ.get("NUTRITION_API_URL", "https://garmin-sleep-api.onrender.com")
 API_KEY = os.environ.get("NUTRITION_API_KEY", "")
@@ -63,6 +67,17 @@ async def log_nutrition(
     )
 
 
+async def health(request):
+    return PlainTextResponse("ok")
+
+
+app = Starlette(
+    routes=[
+        Route("/health", endpoint=health),
+        Mount("/", app=mcp.sse_app()),
+    ]
+)
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
-    mcp.run(transport="sse", host="0.0.0.0", port=port)
+    uvicorn.run(app, host="0.0.0.0", port=port)
