@@ -1,4 +1,7 @@
-mcp[cli]
+mcp>=1.0.0
 httpx
 uvicorn
 starlette
+sse-starlette
+pydantic
+anyio
